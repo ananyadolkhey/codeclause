@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width , initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </head>
+
+  <body>
+    <div class="main_div">
+      <div class="music_container">
+        <h2 id="title">505</h2>
+        <h3 id="artist">Arctic Monkeys</h3>
+        <div class="img_container">
+          <img src="images/song1.jpg" alt="">
+        </div>
+        <audio src="audio/song1.mp3" >
+
+        </audio>
+        <!---progress bar ------->
+        <div class="progressbar_container" id="progress_container">
+          <div class="progress_duration_meter">
+            <div id="current_time">0:00</div>
+            <div id="duration">4:13</div>
+          </div>
+          <div class="progress_div" id="progress_div">
+            <div class="progress" id="progress"></div>
+
+          </div>
+        </div>
+
+        <!---controls------->
+        <div class="music_controls">
+          <i class="fa-solid fa-backward" id="prev" title="previous"></i>
+          <i class="fa-solid fa-play" id="play" title="play"></i>
+          <i class="fa-solid fa-forward" id="next" title="Next"></i>
+
+        </div>
+
+
+      </div>
+
+    </div>
+    <script >
+    const music = document.querySelector("audio");
+    const img = document.querySelector("img");
+    const play = document.getElementById("play");
+    const artist = document.getElementById("artist");
+    const title = document.getElementById("title");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+
+    let progress = document.getElementById("progress");
+    let total_duration = document.getElementById("duration");
+    let current_time = document.getElementById("current_time");
+
+    const songs = [
+      {
+        name : "song1",
+        title: "505",
+        artist: "Arctic Monkeys",
+      },
+      {
+        name : "song2",
+        title: "SWEET",
+        artist: "Cigarettes After Sex",
+      },
+      {
+        name : "song3",
+        title:"KOKORONASHI" ,
+        artist:"Chouchou-P",
+      }
+    ]
+
+
+    let isPlaying = false;
+
+    const playMusic = ()=>{
+      isPlaying=true;
+      music.play();
+      play.classList.replace("fa-play","fa-pause");
+      img.classList.add("anime");
+    }
+      const pauseMusic = ()=>{
+      isPlaying=false;
+      music.pause();
+      play.classList.replace("fa-pause","fa-play");
+      img.classList.remove("anime");
+    }
+    play.addEventListener("click", ()=>{
+      if(isPlaying){
+        pauseMusic();
+      }
+      else {
+        playMusic();
+      }
+    });
+    //changing the music data
+    const loadSong = (songs)=>{
+      title.textContent = songs.title;
+      artist.textContent = songs.artist;
+      music.src = "audio/" + songs.name + ".mp3";
+      img.src = "images/" + songs.name + ".jpg" ;
+
+    };
+    //loadSong(songs[2]);
+    songIndex = 0;
+    const nextSong = () => {
+      songIndex = (songIndex + 1) % songs.length;
+      loadSong(songs[songIndex]);
+      playMusic();
+    };
+    const prevSong = () => {
+      songIndex = (songIndex - 1 + songs.length)% songs.length;
+      loadSong(songs[songIndex]);
+      playMusic();
+    };
+    //progress js work
+    music.addEventListener("timeupdate", (event)=>{
+      const {currentTime, duration}= event.srcElement;
+      console.log(currentTime);
+      console.log(duration);
+
+      let progress_time = (currentTime/duration)*100;
+      progress.style.width = `${ progress_time}%`;
+
+
+      // music duration timeupdate
+      let min_duration = Math.floor(duration/60) ;
+      let sec_duration =  Math.floor(duration%60);
+
+      let tot_duration  = `${min_duration}:${sec_duration}`;
+      if(duration)
+    {  total_duration.textContent = `${tot_duration}`};
+
+
+    //current duration update
+    let min_currentTime = Math.floor(currentTime/60) ;
+    let sec_currentTime =  Math.floor(currentTime%60);
+    if(sec_currentTime<10){
+      sec_currentTime = `0${sec_currentTime}`
+    }
+    let tot_currentTime  = `${min_currentTime}:${sec_currentTime}`;
+
+
+   current_time.textContent = `${tot_currentTime}`;
+    })
+    // progress onclick functionality
+    progress_div.addEventListener("click",(event)=>{
+      const {duration} = music; //destructuring
+      let move_progress = (event.offsetX/event.srcElement.clientWidth)*duration;
+      music.currentTime = move_progress;     
+    })
+
+    // if music end , call nextSong function
+    music.addEventListener("ended",nextSong);
+
+    next.addEventListener("click", nextSong);
+    prev.addEventListener("click", prevSong);
+
+
+
+    </script>
+  </body>
+</html>
